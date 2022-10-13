@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.myntra.cart.entity.Cart;
 import com.myntra.cart.entity.Item;
 import com.myntra.cart.entity.Promo;
+import com.myntra.cart.entity.Transaction;
 import com.myntra.cart.service.CartService;
 import com.myntra.cart.service.PromoService;
 
@@ -30,16 +31,22 @@ public class CartController{
 	private PromoService promoService;
 	
 	@PostMapping("/add/item")
-	public Item addItemToCart(@RequestBody Item item) {
+	public Transaction addItemToCart(@RequestBody Item item) {
 		return cartService.addItemToCart(item);
 	}
 	
 	@PostMapping("/remove/item")
-	public Item removeItemFromCart(@RequestBody Item item) {
+	public Transaction removeItemFromCart(@RequestBody Item item) {
 		return cartService.removeItemFromCart(item);
 	}
 	
-	@GetMapping("/{id}")
+	@GetMapping("/user/{id}")
+    public Set<Item> getItemsInCart(@PathVariable("id") Long id) {
+		log.info("Inside getItemsInCart method of CartController");
+		return cartService.getItemsInCart(id);
+	}
+	
+	@GetMapping("/cart/{id}")
     public Set<Item> getCartItemsByUserId(@PathVariable("id") Long id) {
 		log.info("Inside getCartById method of CartController");
 		return cartService.getCartById(id);

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.myntra.cart.entity.Cart;
 import com.myntra.cart.entity.Item;
+import com.myntra.cart.entity.Transaction;
 import com.myntra.cart.repository.CartRepository;
-
-import ch.qos.logback.classic.Logger;
+import com.myntra.cart.repository.ItemRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -20,11 +20,25 @@ public class CartService {
 	@Autowired
 	private CartRepository cartRepository;
 	
+	@Autowired
+	private ItemRepository itemRepository;
+	
+	public Set<Item> getItemsInCart(Long cartId){
+		log.info("Inside getItemsInCart method");
+		Set<Item> items = null;
+		try {
+		   items = itemRepository.findAllByCartId(cartId);
+		}catch(Exception e){
+	    	log.error("Exception occured while fetching items inside cart");
+		}
+		return items;
+	}
+	
 	public Set<Item> getCartById(Long userId) {
 		log.info("Inside getCartById method");
 		Set<Item> items = new HashSet<>();
 	    try {
-		  Cart cart = cartRepository.findByCartId(userId);
+		  Cart cart = cartRepository.findByUserId(userId);
 		  items = cart.getItems();
 	    }catch(Exception e){
 	    	log.error("Exception occured while fetching items inside cart");
@@ -32,13 +46,31 @@ public class CartService {
 		return items;
 	}
 
-	public Item addItemToCart(Item item) {
-		// TODO Auto-generated method stub
-		return null;
+	public Transaction addItemToCart(Item item) {
+		log.info("Inside addItemToCart method");
+		Transaction tx = new Transaction();
+		try{
+		   itemRepository.save(item);
+		   tx.setResult("SUCCESS");
+		}catch(Exception e) {
+			log.error("Exception occured while adding items inside cart");
+			tx.setError(e.getMessage());
+			tx.setResult("FAILED");
+		}
+		return tx;
 	}
 
-	public Item removeItemFromCart(Item item) {
-		// TODO Auto-generated method stub
-		return null;
+	public Transaction removeItemFromCart(Item item) {
+		log.info("Inside addItemToCart method");
+		Transaction tx = new Transaction();
+		try{
+		   itemRepository.delete(item);
+		   tx.setResult("SUCCESS");
+		}catch(Exception e) {
+			log.error("Exception occured while adding items inside cart");
+			tx.setError(e.getMessage());
+			tx.setResult("FAILED");
+		}
+		return tx;
 	}
 }
